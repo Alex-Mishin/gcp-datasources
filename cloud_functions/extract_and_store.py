@@ -20,7 +20,7 @@ def extract_url_store_json(event, context):
 
     client = storage.Client()
     url_parts = pubsub_message.split('/')
-    bucket_name = url_parts[2]
+    bucket_name = 'api_extracted_' + url_parts[2]
     if not client.lookup_bucket(bucket_name):
         client.create_bucket(bucket_name)
     bucket = client.bucket(bucket_name)
