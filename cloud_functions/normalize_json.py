@@ -40,3 +40,8 @@ def normalize_json(event, context):
         data = json.load(file)
 
     norm_data = prefix_keys_remove_nulls(data, prefix='c_')
+    out = json.dumps(norm_data)
+
+    out_bucket = client.get_bucket('normalized_data')
+    out_blob = storage.Blob(file['name'], out_bucket)
+    out_blob.upload_from_string(out)
