@@ -28,20 +28,19 @@ def normalize_json(event, context):
          event (dict): Event payload.
          context (google.cloud.functions.Context): Metadata for the event.
     """
-    file = event
     client = storage.Client()
-    bucket = client.get_bucket(file['bucket'])
-    blob = storage.Blob(file['name'], bucket)
+    bucket = client.get_bucket(event['bucket'])
+    blob = storage.Blob(event['name'], bucket)
 
-    with open('file.json', 'wb') as file_ojb:
+    with open('/tmp/file.json', 'wb') as file_ojb:
         client.download_blob_to_file(blob, file_ojb)
 
-    with open('file.json', 'r') as file:
-        data = json.load(file)
+    with open('/tmp/file.json', 'r') as file_ojb:
+        data = json.load(file_ojb)
 
     norm_data = prefix_keys_remove_nulls(data, prefix='c_')
     out = json.dumps(norm_data)
 
     out_bucket = client.get_bucket('normalized_data')
-    out_blob = storage.Blob(file['name'], out_bucket)
+    out_blob = storage.Blob(event['name'], out_bucket)
     out_blob.upload_from_string(out)
