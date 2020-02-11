@@ -32,12 +32,7 @@ def normalize_json(event, context):
     bucket = client.get_bucket(event['bucket'])
     blob = storage.Blob(event['name'], bucket)
 
-    with open('/tmp/file.json', 'wb') as file_ojb:
-        client.download_blob_to_file(blob, file_ojb)
-
-    with open('/tmp/file.json', 'r') as file_ojb:
-        data = json.load(file_ojb)
-
+    data = json.loads(blob.download_as_string())
     norm_data = prefix_keys_remove_nulls(data, prefix='c_')
     out = json.dumps(norm_data)
 
