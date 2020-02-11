@@ -3,6 +3,7 @@ import urllib3
 from hashlib import md5
 from google.cloud import storage
 
+BUCKET = 'api_data_extracted'
 
 def extract_url_store_json(event, context):
     """
@@ -20,12 +21,8 @@ def extract_url_store_json(event, context):
     out_str = req.data.decode('utf-8')
 
     client = storage.Client()
+    bucket = client.bucket(BUCKET)
     url_parts = pubsub_message.split('/')
-    bucket_name = md5(url_parts[2].encode()).hexdigest()
-    if not client.lookup_bucket(bucket_name):
-        client.create_bucket(bucket_name)
-    bucket = client.bucket(bucket_name)
-
-    blob_name = '/'.join(url_parts[3:]) + '/' + context.timestamp
+    blob_name = '/'.join(url_parts[2:]) + '/' + context.timestamp
     blob = bucket.blob(blob_name)
     blob.upload_from_string(out_str)
