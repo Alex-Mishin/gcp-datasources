@@ -1,5 +1,6 @@
 import base64
 import urllib3
+from hashlib import md5
 from google.cloud import storage
 
 
@@ -20,7 +21,7 @@ def extract_url_store_json(event, context):
 
     client = storage.Client()
     url_parts = pubsub_message.split('/')
-    bucket_name = 'api_extracted_' + url_parts[2]
+    bucket_name = md5(url_parts[2].encode()).hexdigest()
     if not client.lookup_bucket(bucket_name):
         client.create_bucket(bucket_name)
     bucket = client.bucket(bucket_name)
