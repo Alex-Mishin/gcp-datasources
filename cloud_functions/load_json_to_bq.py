@@ -10,8 +10,6 @@ def load_json_to_bq(event, context):
     :param context: (google.cloud.functions.Context): Metadata for the event.
     """
     client = bigquery.Client(PROJECT_ID)
-    dataset_ref = bigquery.dataset.DatasetReference(PROJECT_ID, DATASET)
-
     table_name = event['name'].split('/')[0].replace('.', '_')
     full_name = PROJECT_ID + '.' + DATASET + '.' + table_name
     table_ref = client.create_table(full_name, exists_ok=True)
@@ -24,7 +22,7 @@ def load_json_to_bq(event, context):
     load_job = client.load_table_from_uri(
         uri, table_ref, job_config=job_config
     )
-    print("Starting job {}".format(load_job.job_id))
+    print(f"Starting job {load_job.job_id}")
 
-    load_job.result()
-    print("Job finished.")
+    result = load_job.result()
+    print(f"Job finished {result}")
