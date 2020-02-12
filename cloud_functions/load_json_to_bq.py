@@ -28,10 +28,3 @@ def load_json_to_bq(event, context):
 
     load_job.result()
     print("Job finished.")
-
-    destination_table = client.get_table(table_ref)
-    print("Loaded {} rows.".format(destination_table.num_rows))
-    print("Job finished.")
-
-    destination_table = client.get_table(dataset_ref.table("table_name"))
-    print("Loaded {} rows.".format(destination_table.num_rows))
