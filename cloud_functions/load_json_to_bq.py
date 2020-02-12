@@ -12,9 +12,9 @@ def load_json_to_bq(event, context):
     client = bigquery.Client(PROJECT_ID)
     dataset_ref = bigquery.dataset.DatasetReference(PROJECT_ID, DATASET)
 
-    table_name = '_'.join(event['name'].split('/')[:-1]).replace('.', '_')
+    table_name = event['name'].split('/')[0].replace('.', '_')
     full_name = PROJECT_ID + '.' + DATASET + '.' + table_name
-    client.create_table(full_name, exists_ok=True)
+    table_ref = client.create_table(full_name, exists_ok=True)
 
     job_config = bigquery.LoadJobConfig()
     job_config.autodetect = True
@@ -22,11 +22,15 @@ def load_json_to_bq(event, context):
 
     uri = 'gs://' + event['bucket'] + '/' + event['name']
     load_job = client.load_table_from_uri(
-        uri, dataset_ref.table(table_name), job_config=job_config
+        uri, table_ref, job_config=job_config
     )
     print("Starting job {}".format(load_job.job_id))
 
     load_job.result()
+    print("Job finished.")
+
+    destination_table = client.get_table(table_ref)
+    print("Loaded {} rows.".format(destination_table.num_rows))
     print("Job finished.")
 
     destination_table = client.get_table(dataset_ref.table("table_name"))
