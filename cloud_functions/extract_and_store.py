@@ -1,6 +1,5 @@
 import base64
 import urllib3
-from hashlib import md5
 from google.cloud import storage
 
 BUCKET = 'api_data_extracted'
